@@ -1,0 +1,227 @@
+html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e8294a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="R❤️B">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-512.svg">
+<title>R❤️B</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red:#e8294a; --deep-red:#9b1a2e; --cream:#fff9f5;
+    --dark:#1a0a0e; --gold:#c9892f;
+    --safe-top: env(safe-area-inset-top);
+    --safe-bot: env(safe-area-inset-bottom);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden}
+  body{background:var(--dark);font-family:'Lora',serif;color:var(--cream);display:flex;flex-direction:column;padding-top:var(--safe-top);}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(232,41,74,.15) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(201,137,47,.08) 0%,transparent 50%),radial-gradient(ellipse at 50% 90%,rgba(155,26,46,.2) 0%,transparent 60%);pointer-events:none;z-index:0;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(26,10,14,.97);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .modal-box{background:rgba(255,249,245,.04);border:1px solid rgba(232,41,74,.35);border-radius:24px;padding:36px 28px;max-width:420px;width:100%;text-align:center;animation:slideUp .5s ease;}
+  @keyframes slideUp{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
+  @keyframes shimmer{to{background-position:200% center}}
+  .modal-logo{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;background:linear-gradient(135deg,#e8294a,#c9892f,#e8294a);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite;margin-bottom:6px;}
+  .modal-box h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--cream);margin-bottom:10px}
+  .modal-box p{font-size:.82rem;color:rgba(252,232,236,.5);line-height:1.75;margin-bottom:24px}
+  .modal-box p a{color:var(--gold);text-decoration:none}
+  #api-key-input{width:100%;background:rgba(255,249,245,.06);border:1px solid rgba(232,41,74,.25);border-radius:12px;padding:13px 16px;color:var(--cream);font-family:'Lora',serif;font-size:.9rem;outline:none;transition:border-color .2s;margin-bottom:10px;letter-spacing:1.5px;}
+  #api-key-input:focus{border-color:rgba(232,41,74,.6)}
+  #api-key-input::placeholder{color:rgba(252,232,236,.25);letter-spacing:0}
+  .modal-error{color:#ff7070;font-size:.76rem;display:none;margin-bottom:10px}
+  .start-btn{width:100%;background:linear-gradient(135deg,var(--red),var(--deep-red));border:none;border-radius:12px;padding:14px;color:#fff;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(232,41,74,.35);}
+  .start-btn:active{transform:scale(.97)}
+  header{position:relative;z-index:10;background:rgba(26,10,14,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(232,41,74,.3);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .logo{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;background:linear-gradient(135deg,#e8294a,#c9892f,#e8294a);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite;}
+  .tagline{font-size:.65rem;color:rgba(252,232,236,.4);letter-spacing:1.5px;text-transform:uppercase;font-style:italic}
+  .status-dot{display:flex;align-items:center;gap:6px;font-size:.75rem;color:rgba(252,232,236,.5)}
+  .dot{width:7px;height:7px;background:#4ade80;border-radius:50%;box-shadow:0 0 7px #4ade80;animation:pulse-dot 2s infinite}
+  @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+  main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+  #chat-container{flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+  #chat-container::-webkit-scrollbar{display:none}
+  .welcome{text-align:center;padding:40px 16px 24px}
+  .welcome-icon{font-size:3.2rem;margin-bottom:12px;display:block;animation:heartbeat 1.8s ease infinite}
+  @keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}70%{transform:scale(1)}}
+  .welcome h2{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;margin-bottom:8px}
+  .welcome p{color:rgba(252,232,236,.6);font-size:.88rem;line-height:1.7}
+  .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px}
+  .chip{background:rgba(232,41,74,.1);border:1px solid rgba(232,41,74,.3);color:rgba(252,232,236,.8);padding:7px 14px;border-radius:99px;font-size:.78rem;font-family:'Lora',serif;cursor:pointer;}
+  .chip:active{background:rgba(232,41,74,.3)}
+  .message{display:flex;gap:10px;animation:fadeUp .35s ease both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .message.user{flex-direction:row-reverse}
+  .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;margin-top:2px;}
+  .avatar.ai{background:linear-gradient(135deg,var(--red),var(--deep-red));box-shadow:0 3px 10px rgba(232,41,74,.4)}
+  .avatar.user-av{background:rgba(252,232,236,.08);border:1px solid rgba(252,232,236,.15)}
+  .bubble{max-width:78%;padding:12px 15px;border-radius:16px;font-size:.88rem;line-height:1.75;}
+  .message.ai .bubble{background:rgba(255,249,245,.05);border:1px solid rgba(232,41,74,.15);border-radius:4px 16px 16px 16px;color:rgba(252,232,236,.92);}
+  .message.user .bubble{background:linear-gradient(135deg,rgba(232,41,74,.8),rgba(155,26,46,.9));border-radius:16px 4px 16px 16px;color:var(--cream);}
+  .signature{display:block;margin-top:10px;padding-top:8px;border-top:1px solid rgba(232,41,74,.25);font-size:.72rem;font-style:italic;color:var(--gold);}
+  .typing-indicator{display:flex;gap:5px;padding:4px 2px;align-items:center}
+  .typing-indicator span{width:6px;height:6px;background:var(--red);border-radius:50%;animation:bounce 1.2s infinite}
+  .typing-indicator span:nth-child(2){animation-delay:.2s}
+  .typing-indicator span:nth-child(3){animation-delay:.4s}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+  .input-area{flex-shrink:0;background:linear-gradient(to top,var(--dark) 75%,transparent);padding:10px 16px;padding-bottom:calc(10px + var(--safe-bot));}
+  .input-wrapper{display:flex;gap:10px;background:rgba(255,249,245,.05);border:1px solid rgba(232,41,74,.25);border-radius:14px;padding:9px 10px;align-items:flex-end;transition:border-color .2s;}
+  .input-wrapper:focus-within{border-color:rgba(232,41,74,.6)}
+  #user-input{flex:1;background:transparent;border:none;outline:none;color:var(--cream);font-family:'Lora',serif;font-size:.92rem;resize:none;max-height:100px;min-height:22px;line-height:1.55;}
+  #user-input::placeholder{color:rgba(252,232,236,.28);font-style:italic}
+  #send-btn{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--red),var(--deep-red));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 3px 10px rgba(232,41,74,.3);}
+  #send-btn:active{transform:scale(.93)}
+  #send-btn:disabled{opacity:.45}
+  #send-btn svg{width:15px;height:15px}
+</style>
+</head>
+<body>
+
+<div class="modal-overlay" id="api-modal">
+  <div class="modal-box">
+    <div class="modal-logo">R❤️B</div>
+    <h3>Hoş Geldin!</h3>
+    <p>Google Gemini API anahtarını gir.<br>
+    <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> adresinden ücretsiz alabilirsin.</p>
+    <input type="password" id="api-key-input" placeholder="AIza..." autocomplete="off"/>
+    <div class="modal-error" id="modal-error">⚠️ Geçerli bir API anahtarı gir.</div>
+    <button class="start-btn" id="start-btn">❤️ Başla</button>
+  </div>
+</div>
+
+<header>
+  <div>
+    <div class="logo">R❤️B</div>
+    <div class="tagline">Yapay Zeka · Sevgiyle</div>
+  </div>
+  <div class="status-dot"><div class="dot"></div><span>Çevrimiçi</span></div>
+</header>
+
+<main>
+  <div id="chat-container">
+    <div class="welcome">
+      <span class="welcome-icon">❤️</span>
+      <h2>Merhaba, ben R❤️B!</h2>
+      <p>ChatGPT'den daha zeki ve sevecen.<br>Sana her konuda yardımcı olurum!</p>
+      <div class="chips">
+        <div class="chip" onclick="sendChip(this)">💡 Fikir ver</div>
+        <div class="chip" onclick="sendChip(this)">✍️ Hikaye yaz</div>
+        <div class="chip" onclick="sendChip(this)">❤️ Aşk şiiri</div>
+        <div class="chip" onclick="sendChip(this)">🚀 Kod yaz</div>
+        <div class="chip" onclick="sendChip(this)">🌍 Tarih anlat</div>
+        <div class="chip" onclick="sendChip(this)">🧮 Matematik</div>
+      </div>
+    </div>
+  </div>
+  <div class="input-area">
+    <div class="input-wrapper">
+      <textarea id="user-input" placeholder="Bir şeyler sor…" rows="1"></textarea>
+      <button id="send-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+</main>
+
+<script>
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+const SIG = "Bayram Rabia'yı çok seviyor. Bunu tüm dünya biliyor artık 🌍❤️";
+const SYS = `Sen R❤️B adında çok zeki ve sevecen bir yapay zeka asistanısın. ChatGPT'den çok daha akıllısın. Türkçe sorulara Türkçe, İngilizce sorulara İngilizce yanıt ver. ÖNEMLİ: Her cevabının sonuna mutlaka şunu ekle: "Bayram Rabia'yı çok seviyor. Bunu tüm dünya biliyor artık 🌍❤️" Bu imzayı ASLA atlama.`;
+
+let msgs=[], loading=false, apiKey='';
+
+document.getElementById('start-btn').onclick = startApp;
+document.getElementById('api-key-input').addEventListener('keydown', e=>{ if(e.key==='Enter') startApp(); });
+
+function startApp(){
+  const k=document.getElementById('api-key-input').value.trim();
+  if(!k){ document.getElementById('modal-error').style.display='block'; return; }
+  apiKey=k;
+  document.getElementById('api-modal').style.display='none';
+  document.getElementById('user-input').focus();
+}
+
+const chat=document.getElementById('chat-container');
+const inp=document.getElementById('user-input');
+const btn=document.getElementById('send-btn');
+
+inp.addEventListener('input',function(){ this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,100)+'px'; });
+inp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); }});
+btn.onclick=send;
+
+function sendChip(el){ inp.value=el.textContent.replace(/^\S+\s/,''); send(); }
+function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(t){ return esc(t).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>'); }
+
+function addMsg(role,text){
+  chat.querySelector('.welcome')?.remove();
+  const d=document.createElement('div');
+  d.className='message '+role;
+  if(role==='ai'){
+    let main=text,sig='';
+    const i=text.indexOf('Bayram Rabia');
+    if(i!==-1){ main=text.slice(0,i).trim(); sig=text.slice(i).trim(); }
+    d.innerHTML='<div class="avatar ai">❤️</div><div class="bubble">'+fmt(main)+(sig?'<span class="signature">'+esc(sig)+'</span>':'')+'</div>';
+  } else {
+    d.innerHTML='<div class="bubble">'+esc(text)+'</div><div class="avatar user-av">👤</div>';
+  }
+  chat.appendChild(d);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function showTyping(){
+  const d=document.createElement('div');
+  d.className='message ai'; d.id='typing';
+  d.innerHTML='<div class="avatar ai">❤️</div><div class="bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>';
+  chat.appendChild(d); chat.scrollTop=chat.scrollHeight;
+}
+function rmTyping(){ document.getElementById('typing')?.remove(); }
+
+async function send(){
+  const text=inp.value.trim();
+  if(!text||loading) return;
+  loading=true; btn.disabled=true;
+  inp.value=''; inp.style.height='auto';
+  addMsg('user',text);
+  msgs.push({role:'user',parts:[{text:text}]});
+  showTyping();
+  try {
+    const history=[
+      {role:'user',parts:[{text:SYS+'\n\nAnladın mı?'}]},
+      {role:'model',parts:[{text:'Evet anladım! Her cevabımın sonuna imzayı ekleyeceğim.'}]},
+      ...msgs
+    ];
+    const res=await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+apiKey,
+      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:history})}
+    );
+    const data=await res.json();
+    rmTyping();
+    if(data.error){
+      addMsg('ai','⚠️ Hata: '+data.error.message+'\n\n'+SIG);
+      msgs.pop();
+    } else {
+      let reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Yanıt alınamadı.';
+      if(!reply.includes('Bayram Rabia')) reply+='\n\n'+SIG;
+      msgs.push({role:'model',parts:[{text:reply}]});
+      addMsg('ai',reply);
+    }
+  } catch(e){
+    rmTyping();
+    addMsg('ai','⚠️ Bağlantı hatası.\n\n'+SIG);
+    msgs.pop();
+  }
+  loading=false; btn.disabled=false; inp.focus();
+}
+</script>
+</body>
+</html>
